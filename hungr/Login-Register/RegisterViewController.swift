@@ -1,6 +1,6 @@
 //
 //  RegisterViewController.swift
-//  assignment8
+//  hungr
 //
 //  Created by Isabel Yeow on 11/7/25.
 //
@@ -41,7 +41,6 @@ class RegisterViewController: UIViewController {
     }
     
     @objc func onRegisterTapped() {
-        // Validate inputs first
         if validateInputs() {
             showActivityIndicator()
             registerNewUser()
@@ -49,8 +48,11 @@ class RegisterViewController: UIViewController {
     }
     
     @objc func onLoginTapped() {
-        // Navigate to login screen
         navigationController?.popViewController(animated: true)
+    }
+    
+    func navigateToMainScreen() {
+        navigationController?.popToRootViewController(animated: true)
     }
 }
 
@@ -58,7 +60,6 @@ class RegisterViewController: UIViewController {
 extension RegisterViewController {
     
     func validateInputs() -> Bool {
-        // Get all input values
         guard let name = registerView.textFieldName.text, !name.isEmpty,
               let email = registerView.textFieldEmail.text, !email.isEmpty,
               let password = registerView.textFieldPassword.text, !password.isEmpty,
@@ -68,25 +69,21 @@ extension RegisterViewController {
             return false
         }
         
-        // Validate name
         if name.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
             showAlert(title: "Invalid Name", message: "Please enter a valid name")
             return false
         }
         
-        // Validate email format
         if !isValidEmail(email) {
             showAlert(title: "Invalid Email", message: "Please enter a valid email address")
             return false
         }
         
-        // Check password match
         if password != repeatPassword {
             showAlert(title: "Password Mismatch", message: "Passwords do not match. Please try again")
             return false
         }
         
-        // Check password strength (Firebase requires at least 6 characters)
         if password.count < 6 {
             showAlert(title: "Weak Password", message: "Password must be at least 6 characters long")
             return false
@@ -101,9 +98,11 @@ extension RegisterViewController {
         return emailPred.evaluate(with: email)
     }
     
-    func showAlert(title: String, message: String) {
+    func showAlert(title: String, message: String, completion: (() -> Void)? = nil) {
         let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
-        alert.addAction(UIAlertAction(title: "OK", style: .default))
+        alert.addAction(UIAlertAction(title: "OK", style: .default) { _ in
+            completion?()
+        })
         present(alert, animated: true)
     }
 }
@@ -131,66 +130,69 @@ extension RegisterViewController {
         guard let name = registerView.textFieldName.text,
               let email = registerView.textFieldEmail.text,
               let password = registerView.textFieldPassword.text else {
-            hideActivityIndicator()
+            DispatchQueue.main.async {
+                self.hideActivityIndicator()
+            }
             return
         }
         
-        // Create user in Firebase Auth
         Auth.auth().createUser(withEmail: email, password: password) { [weak self] result, error in
-            if let error = error {
-                self?.hideActivityIndicator()
-                self?.showAlert(title: "Registration Failed", message: error.localizedDescription)
-                return
-            }
+            guard let self = self else { return }
             
-            guard let user = result?.user else {
-                self?.hideActivityIndicator()
-                self?.showAlert(title: "Error", message: "Failed to create user")
-                return
-            }
-            
-            // Update user profile with name
-            let changeRequest = user.createProfileChangeRequest()
-            changeRequest.displayName = name
-            changeRequest.commitChanges { error in
+            // Always run UI updates on main thread
+            DispatchQueue.main.async {
                 if let error = error {
-                    print("Error updating profile: \(error)")
+                    self.hideActivityIndicator()
+                    self.showAlert(title: "Registration Failed", message: error.localizedDescription)
+                    return
                 }
+                
+                guard let user = result?.user else {
+                    self.hideActivityIndicator()
+                    self.showAlert(title: "Error", message: "Failed to create user")
+                    return
+                }
+                
+                // Update display name (don't wait for it)
+                let changeRequest = user.createProfileChangeRequest()
+                changeRequest.displayName = name
+                changeRequest.commitChanges { error in
+                    if let error = error {
+                        print("Error updating profile: \(error)")
+                    }
+                }
+                
+                // Save to Firestore
+                self.saveUserToFirestore(uid: user.uid, name: name, email: email)
             }
-            
-            // Save user to Firestore
-            self?.saveUserToFirestore(uid: user.uid, name: name, email: email)
         }
     }
     
     func saveUserToFirestore(uid: String, name: String, email: String) {
-        // Create User object
-        let newUser = User(uid: uid, name: name, email: email)
+        let userData: [String: Any] = [
+            "name": name,
+            "email": email,
+            "uid": uid,
+            "createdAt": Timestamp(date: Date())
+        ]
         
-        // Save to Firestore
-        database.collection("users").document(uid).setData(newUser.toDictionary()) { [weak self] error in
-            self?.hideActivityIndicator()
+        database.collection("users").document(uid).setData(userData) { [weak self] error in
+            guard let self = self else { return }
             
-            if let error = error {
-                self?.showAlert(title: "Error", message: "Failed to save user data: \(error.localizedDescription)")
-                return
-            }
-            
-            // Success - Navigate back to login or main screen
-            self?.showAlert(title: "Success", message: "Account created successfully! Welcome!") {
-                self?.navigationController?.popViewController(animated: true)
+            // CRITICAL: Always hide spinner on main thread
+            DispatchQueue.main.async {
+                self.hideActivityIndicator()
+                
+                if let error = error {
+                    self.showAlert(title: "Error", message: "Failed to save user data: \(error.localizedDescription)")
+                    return
+                }
+                
+                // Success!
+                self.showAlert(title: "Success", message: "Account created successfully!") {
+                    self.navigateToMainScreen()
+                }
             }
         }
-    }
-}
-
-// MARK: - Helper to add completion handler to alert
-extension RegisterViewController {
-    func showAlert(title: String, message: String, completion: (() -> Void)? = nil) {
-        let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
-        alert.addAction(UIAlertAction(title: "OK", style: .default) { _ in
-            completion?()
-        })
-        present(alert, animated: true)
     }
 }

@@ -5,14 +5,6 @@
 //  Created by Isabel Yeow on 11/7/25.
 //
 
-
-//
-//  LoginView.swift
-//  WA8
-//
-//  Login screen UI layout
-//
-
 import UIKit
 
 class LoginView: UIView {
@@ -42,7 +34,7 @@ class LoginView: UIView {
     
     func setupLabelTitle() {
         labelTitle = UILabel()
-        labelTitle.text = "Messaging App"
+        labelTitle.text = "Hungr"
         labelTitle.font = UIFont.boldSystemFont(ofSize: 36)
         labelTitle.textAlignment = .center
         labelTitle.translatesAutoresizingMaskIntoConstraints = false
@@ -51,7 +43,7 @@ class LoginView: UIView {
     
     func setupLabelWelcome() {
         labelWelcome = UILabel()
-        labelWelcome.text = "Welcome Back!"
+        labelWelcome.text = "Welcome"
         labelWelcome.font = UIFont.systemFont(ofSize: 18)
         labelWelcome.textColor = .systemGray
         labelWelcome.textAlignment = .center

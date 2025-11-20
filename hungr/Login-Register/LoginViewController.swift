@@ -39,7 +39,10 @@ class LoginViewController: UIViewController {
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         
-        // Check if user is already logged in
+        // Show navigation bar on login screen
+        navigationController?.setNavigationBarHidden(false, animated: true)
+        
+        // If already logged in, go to main screen
         if Auth.auth().currentUser != nil {
             navigateToMainScreen()
         }
