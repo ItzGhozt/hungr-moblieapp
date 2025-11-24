@@ -132,11 +132,11 @@ class MainView: UIView {
     func initConstraints() {
         NSLayoutConstraint.activate([
             // Background Image - FULL SCREEN but maintains aspect ratio
-            imageViewHome.topAnchor.constraint(equalTo: self.topAnchor),
+            imageViewHome.topAnchor.constraint(equalTo: self.topAnchor, constant: -10),
             imageViewHome.leadingAnchor.constraint(equalTo: self.leadingAnchor),
             imageViewHome.trailingAnchor.constraint(equalTo: self.trailingAnchor),
-            imageViewHome.bottomAnchor.constraint(equalTo: self.bottomAnchor),
-            
+            imageViewHome.bottomAnchor.constraint(equalTo: self.bottomAnchor, constant: -10),
+
             // Camera Button - TOP LEFT CORNER (Brought to front with higher z-index)
             buttonCamera.topAnchor.constraint(equalTo: self.safeAreaLayoutGuide.topAnchor, constant: 8),
             buttonCamera.leadingAnchor.constraint(equalTo: self.leadingAnchor, constant: 20),
