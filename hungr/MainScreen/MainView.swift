@@ -104,13 +104,9 @@ class MainView: UIView {
         buttonFridge = UIButton(type: .system)
         buttonFridge.setTitle("Fridge", for: .normal)
         buttonFridge.titleLabel?.font = UIFont.boldSystemFont(ofSize: 18)
-        buttonFridge.backgroundColor = .systemBlue.withAlphaComponent(0.9)
-        buttonFridge.setTitleColor(.white, for: .normal)
+        buttonFridge.backgroundColor = .clear // Make invisible
+        buttonFridge.setTitleColor(.clear, for: .normal) // Make text invisible
         buttonFridge.layer.cornerRadius = 12
-        buttonFridge.layer.shadowColor = UIColor.black.cgColor
-        buttonFridge.layer.shadowOffset = CGSize(width: 0, height: 15)
-        buttonFridge.layer.shadowRadius = 4
-        buttonFridge.layer.shadowOpacity = 0.2
         buttonFridge.translatesAutoresizingMaskIntoConstraints = false
         self.addSubview(buttonFridge)
     }
@@ -119,30 +115,22 @@ class MainView: UIView {
         buttonPantry = UIButton(type: .system)
         buttonPantry.setTitle("Pantry", for: .normal)
         buttonPantry.titleLabel?.font = UIFont.boldSystemFont(ofSize: 18)
-        buttonPantry.backgroundColor = .systemBlue.withAlphaComponent(0.9)
-        buttonPantry.setTitleColor(.white, for: .normal)
+        buttonPantry.backgroundColor = .clear // Make invisible
+        buttonPantry.setTitleColor(.clear, for: .normal) // Make text invisible
         buttonPantry.layer.cornerRadius = 12
-        buttonPantry.layer.shadowColor = UIColor.black.cgColor
-        buttonPantry.layer.shadowOffset = CGSize(width: 0, height: 2)
-        buttonPantry.layer.shadowRadius = 4
-        buttonPantry.layer.shadowOpacity = 0.2
         buttonPantry.translatesAutoresizingMaskIntoConstraints = false
         self.addSubview(buttonPantry)
     }
     
     func setupFreezerButton() {
         buttonFreezer = UIButton(type: .system)
-        buttonFreezer.setTitle("Freezer", for: .normal)
-        buttonFreezer.titleLabel?.font = UIFont.boldSystemFont(ofSize: 18)
-        buttonFreezer.backgroundColor = .systemBlue.withAlphaComponent(0.9)
-        buttonFreezer.setTitleColor(.white, for: .normal)
-        buttonFreezer.layer.cornerRadius = 12
-        buttonFreezer.layer.shadowColor = UIColor.black.cgColor
-        buttonFreezer.layer.shadowOffset = CGSize(width: 0, height: 2)
-        buttonFreezer.layer.shadowRadius = 4
-        buttonFreezer.layer.shadowOpacity = 0.2
-        buttonFreezer.translatesAutoresizingMaskIntoConstraints = false
-        self.addSubview(buttonFreezer)
+          buttonFreezer.setTitle("Freezer", for: .normal)
+          buttonFreezer.titleLabel?.font = UIFont.boldSystemFont(ofSize: 18)
+          buttonFreezer.backgroundColor = .clear // Make invisible
+          buttonFreezer.setTitleColor(.clear, for: .normal) // Make text invisible
+          buttonFreezer.layer.cornerRadius = 12
+          buttonFreezer.translatesAutoresizingMaskIntoConstraints = false
+          self.addSubview(buttonFreezer)
     }
     
     func initConstraints() {
@@ -172,10 +160,10 @@ class MainView: UIView {
             buttonFridge.heightAnchor.constraint(equalToConstant: 220), //190 //250
             
             // Pantry Button
-            buttonPantry.bottomAnchor.constraint(equalTo: self.safeAreaLayoutGuide.bottomAnchor, constant: -100),
+            buttonPantry.bottomAnchor.constraint(equalTo: self.safeAreaLayoutGuide.bottomAnchor, constant: -90),
             buttonPantry.leadingAnchor.constraint(equalTo: self.leadingAnchor, constant: 230),
             buttonPantry.trailingAnchor.constraint(equalTo: self.trailingAnchor, constant: -50),
-            buttonPantry.heightAnchor.constraint(equalToConstant: 100),
+            buttonPantry.heightAnchor.constraint(equalToConstant: 220),
             
             // Freezer Button
             buttonFreezer.bottomAnchor.constraint(equalTo: self.safeAreaLayoutGuide.bottomAnchor, constant: -310),
