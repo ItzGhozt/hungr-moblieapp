@@ -101,10 +101,7 @@ class ProfileViewController: UIViewController {
         if let image = UIImage(named: color) {
             // Force the image to render as original (no tint)
             imageView.image = image.withRenderingMode(.alwaysOriginal)
-            print("✅ Successfully loaded image: \(color)")
-            print("   Image size: \(image.size)")
         } else {
-            print("❌ Failed to load image: \(color)")
             imageView.image = UIImage(systemName: "book.fill")
             imageView.tintColor = .systemBlue
         }
@@ -122,6 +119,18 @@ class ProfileViewController: UIViewController {
         profileView.addSubview(button)
         cookbookButtons.append(button)
         
+        // Create label for cookbook name
+        let label = UILabel()
+        label.translatesAutoresizingMaskIntoConstraints = false
+        label.text = name
+        label.font = UIFont.systemFont(ofSize: 14, weight: .medium)
+        label.textAlignment = .center
+        label.numberOfLines = 2
+        label.textColor = .label
+        
+        profileView.addSubview(label)
+        cookbookLabels.append(label)
+        
         // Calculate position (3 cookbooks per row)
         let row = index / 3
         let column = index % 3
@@ -129,10 +138,15 @@ class ProfileViewController: UIViewController {
         let buttonSize: CGFloat = 100
         
         NSLayoutConstraint.activate([
-            button.topAnchor.constraint(equalTo: profileView.labelMyCookbooks.bottomAnchor, constant: 16 + CGFloat(row) * (buttonSize + spacing)),
+            button.topAnchor.constraint(equalTo: profileView.labelMyCookbooks.bottomAnchor, constant: 16 + CGFloat(row) * (buttonSize + 32 + spacing)),
             button.leadingAnchor.constraint(equalTo: profileView.leadingAnchor, constant: 24 + CGFloat(column) * (buttonSize + spacing)),
             button.widthAnchor.constraint(equalToConstant: buttonSize),
-            button.heightAnchor.constraint(equalToConstant: buttonSize)
+            button.heightAnchor.constraint(equalToConstant: buttonSize),
+            
+            // Position label below button
+            label.topAnchor.constraint(equalTo: button.bottomAnchor, constant: 4),
+            label.leadingAnchor.constraint(equalTo: button.leadingAnchor),
+            label.trailingAnchor.constraint(equalTo: button.trailingAnchor)
         ])
         
         // Update add button position
@@ -148,9 +162,10 @@ class ProfileViewController: UIViewController {
         let column = totalCookbooks % 3
         let spacing: CGFloat = 16
         let buttonSize: CGFloat = 100
+        let labelHeight: CGFloat = 32
         
         NSLayoutConstraint.activate([
-            profileView.buttonAddCookbook.topAnchor.constraint(equalTo: profileView.labelMyCookbooks.bottomAnchor, constant: 16 + CGFloat(row) * (140 + spacing)),
+            profileView.buttonAddCookbook.topAnchor.constraint(equalTo: profileView.labelMyCookbooks.bottomAnchor, constant: 16 + CGFloat(row) * (buttonSize + labelHeight + spacing)),
             profileView.buttonAddCookbook.leadingAnchor.constraint(equalTo: profileView.leadingAnchor, constant: 24 + CGFloat(column) * (buttonSize + spacing)),
             profileView.buttonAddCookbook.widthAnchor.constraint(equalToConstant: buttonSize),
             profileView.buttonAddCookbook.heightAnchor.constraint(equalToConstant: buttonSize)
