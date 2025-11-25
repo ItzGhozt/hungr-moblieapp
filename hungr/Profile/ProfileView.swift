@@ -10,42 +10,22 @@ import UIKit
 class ProfileView: UIView {
     
     var imageViewProfile: UIImageView!
-    var labelName: UILabel!
-    var labelEmail: UILabel!
-    var stackViewInfo: UIStackView!
-    var buttonCookbook: UIButton!
+    var textFieldUsername: UITextField!
+    var textViewBio: UITextView!
+    var labelMyCookbooks: UILabel!
+    var buttonAddCookbook: UIButton!
     
     override init(frame: CGRect) {
         super.init(frame: frame)
         self.backgroundColor = .systemBackground
         
-        setupStackView()
         setupProfileImage()
-        setupCookbookButton()
+        setupUsernameField()
+        setupBioTextView()
+        setupMyCookbooksLabel()
+        setupAddCookbookButton()
         
         initConstraints()
-    }
-    
-    func setupStackView() {
-        labelName = UILabel()
-        labelName.text = "Loading..."
-        labelName.font = UIFont.boldSystemFont(ofSize: 28)
-        labelName.textAlignment = .center
-        labelName.translatesAutoresizingMaskIntoConstraints = false
-        
-        labelEmail = UILabel()
-        labelEmail.text = "Loading..."
-        labelEmail.font = UIFont.systemFont(ofSize: 16)
-        labelEmail.textColor = .systemGray
-        labelEmail.textAlignment = .center
-        labelEmail.translatesAutoresizingMaskIntoConstraints = false
-        
-        stackViewInfo = UIStackView(arrangedSubviews: [labelName, labelEmail])
-        stackViewInfo.axis = .vertical
-        stackViewInfo.spacing = 8
-        stackViewInfo.alignment = .center
-        stackViewInfo.translatesAutoresizingMaskIntoConstraints = false
-        self.addSubview(stackViewInfo)
     }
     
     func setupProfileImage() {
@@ -57,44 +37,102 @@ class ProfileView: UIView {
         self.addSubview(imageViewProfile)
     }
     
-    func setupCookbookButton() {
-        buttonCookbook = UIButton(type: .system)
-        buttonCookbook.setTitle("My Cookbook", for: .normal)
-        buttonCookbook.titleLabel?.font = UIFont.boldSystemFont(ofSize: 18)
-        buttonCookbook.backgroundColor = .systemBlue
-        buttonCookbook.setTitleColor(.white, for: .normal)
-        buttonCookbook.layer.cornerRadius = 12
-        buttonCookbook.translatesAutoresizingMaskIntoConstraints = false
-        self.addSubview(buttonCookbook)
+    func setupUsernameField() {
+        textFieldUsername = UITextField()
+        textFieldUsername.text = "Username"
+        textFieldUsername.font = UIFont.boldSystemFont(ofSize: 20)
+        textFieldUsername.textAlignment = .left
+        textFieldUsername.borderStyle = .none
+        textFieldUsername.translatesAutoresizingMaskIntoConstraints = false
+        self.addSubview(textFieldUsername)
+    }
+    
+    func setupBioTextView() {
+        textViewBio = UITextView()
+        textViewBio.text = "Share something about yourself!"
+        textViewBio.font = UIFont.systemFont(ofSize: 14)
+        textViewBio.textColor = .systemGray
+        textViewBio.textAlignment = .left
+        textViewBio.isScrollEnabled = false
+        textViewBio.layer.borderColor = UIColor.systemGray5.cgColor
+        textViewBio.layer.borderWidth = 1
+        textViewBio.layer.cornerRadius = 8
+        textViewBio.textContainerInset = UIEdgeInsets(top: 8, left: 8, bottom: 8, right: 8)
+        textViewBio.translatesAutoresizingMaskIntoConstraints = false
+        textViewBio.delegate = self
+        self.addSubview(textViewBio)
+    }
+    
+    func setupMyCookbooksLabel() {
+        labelMyCookbooks = UILabel()
+        labelMyCookbooks.text = "My Cookbooks"
+        labelMyCookbooks.font = UIFont.boldSystemFont(ofSize: 22)
+        labelMyCookbooks.textAlignment = .left
+        labelMyCookbooks.translatesAutoresizingMaskIntoConstraints = false
+        self.addSubview(labelMyCookbooks)
+    }
+    
+    func setupAddCookbookButton() {
+        buttonAddCookbook = UIButton(type: .system)
+        buttonAddCookbook.setImage(UIImage(systemName: "plus.circle.fill"), for: .normal)
+        buttonAddCookbook.tintColor = .systemBlue
+        buttonAddCookbook.backgroundColor = .systemGray6
+        buttonAddCookbook.layer.cornerRadius = 12
+        buttonAddCookbook.translatesAutoresizingMaskIntoConstraints = false
+        self.addSubview(buttonAddCookbook)
     }
     
     func initConstraints() {
         NSLayoutConstraint.activate([
-            // Stack View with Name and Email - AT TOP
-            stackViewInfo.topAnchor.constraint(equalTo: self.safeAreaLayoutGuide.topAnchor, constant: 24),
-            stackViewInfo.leadingAnchor.constraint(equalTo: self.leadingAnchor, constant: 32),
-            stackViewInfo.trailingAnchor.constraint(equalTo: self.trailingAnchor, constant: -32),
+            // Profile Image - LEFT SIDE
+            imageViewProfile.topAnchor.constraint(equalTo: self.safeAreaLayoutGuide.topAnchor, constant: 24),
+            imageViewProfile.leadingAnchor.constraint(equalTo: self.leadingAnchor, constant: 24),
+            imageViewProfile.widthAnchor.constraint(equalToConstant: 80),
+            imageViewProfile.heightAnchor.constraint(equalToConstant: 80),
             
-            // Profile Image - BELOW NAME/EMAIL
-            imageViewProfile.topAnchor.constraint(equalTo: stackViewInfo.bottomAnchor, constant: 32),
-            imageViewProfile.centerXAnchor.constraint(equalTo: self.centerXAnchor),
-            imageViewProfile.widthAnchor.constraint(equalToConstant: 120),
-            imageViewProfile.heightAnchor.constraint(equalToConstant: 120),
+            // Username Field - TOP RIGHT, NEXT TO PROFILE IMAGE
+            textFieldUsername.topAnchor.constraint(equalTo: imageViewProfile.topAnchor),
+            textFieldUsername.leadingAnchor.constraint(equalTo: imageViewProfile.trailingAnchor, constant: 16),
+            textFieldUsername.trailingAnchor.constraint(equalTo: self.trailingAnchor, constant: -24),
+            textFieldUsername.heightAnchor.constraint(equalToConstant: 30),
             
-            // Cookbook Button - BELOW PROFILE IMAGE
-            buttonCookbook.topAnchor.constraint(equalTo: imageViewProfile.bottomAnchor, constant: 48),
-            buttonCookbook.leadingAnchor.constraint(equalTo: self.leadingAnchor, constant: 32),
-            buttonCookbook.trailingAnchor.constraint(equalTo: self.trailingAnchor, constant: -32),
-            buttonCookbook.heightAnchor.constraint(equalToConstant: 56)
+            // Bio Text View - BELOW USERNAME, SAME WIDTH AS PROFILE IMAGE HEIGHT
+            textViewBio.topAnchor.constraint(equalTo: textFieldUsername.bottomAnchor, constant: 8),
+            textViewBio.leadingAnchor.constraint(equalTo: imageViewProfile.trailingAnchor, constant: 16),
+            textViewBio.trailingAnchor.constraint(equalTo: self.trailingAnchor, constant: -24),
+            textViewBio.bottomAnchor.constraint(lessThanOrEqualTo: imageViewProfile.bottomAnchor),
+            
+            // My Cookbooks Label - BELOW PROFILE IMAGE
+            labelMyCookbooks.topAnchor.constraint(equalTo: imageViewProfile.bottomAnchor, constant: 40),
+            labelMyCookbooks.leadingAnchor.constraint(equalTo: self.leadingAnchor, constant: 24),
+            labelMyCookbooks.trailingAnchor.constraint(equalTo: self.trailingAnchor, constant: -24),
+            
+            // Add Cookbook Button - BELOW LABEL
+            buttonAddCookbook.topAnchor.constraint(equalTo: labelMyCookbooks.bottomAnchor, constant: 16),
+            buttonAddCookbook.leadingAnchor.constraint(equalTo: self.leadingAnchor, constant: 24),
+            buttonAddCookbook.widthAnchor.constraint(equalToConstant: 100),
+            buttonAddCookbook.heightAnchor.constraint(equalToConstant: 100),
         ])
     }
     
     func updateProfile(name: String, email: String) {
-        labelName.text = name
-        labelEmail.text = email
+        textFieldUsername.text = name
+        // You can use email elsewhere or store it
     }
     
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
+    }
+}
+
+// MARK: - UITextViewDelegate
+extension ProfileView: UITextViewDelegate {
+    func textView(_ textView: UITextView, shouldChangeTextIn range: NSRange, replacementText text: String) -> Bool {
+        let currentText = textView.text ?? ""
+        guard let stringRange = Range(range, in: currentText) else { return false }
+        let updatedText = currentText.replacingCharacters(in: stringRange, with: text)
+        
+        // Max character limit: 150 characters
+        return updatedText.count <= 150
     }
 }
