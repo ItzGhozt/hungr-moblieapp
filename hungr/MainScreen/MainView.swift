@@ -42,31 +42,47 @@ class MainView: UIView {
     }
     
     func setupCameraButton() {
+//        buttonCamera = UIButton(type: .system)
+//        buttonCamera.setImage(UIImage(systemName: "camera.fill"), for: .normal)
+//        buttonCamera.tintColor = .systemBlue
+//        buttonCamera.backgroundColor = .white.withAlphaComponent(0.9)
+//        buttonCamera.layer.cornerRadius = 30
+//        buttonCamera.layer.shadowColor = UIColor.black.cgColor
+//        buttonCamera.layer.shadowOffset = CGSize(width: 0, height: 2)
+//        buttonCamera.layer.shadowRadius = 4
+//        buttonCamera.layer.shadowOpacity = 0.2
+//        buttonCamera.translatesAutoresizingMaskIntoConstraints = false
+//        self.addSubview(buttonCamera)
         buttonCamera = UIButton(type: .system)
         buttonCamera.setImage(UIImage(systemName: "camera.fill"), for: .normal)
-        buttonCamera.tintColor = .systemBlue
-        buttonCamera.backgroundColor = .white.withAlphaComponent(0.9)
+        buttonCamera.tintColor = .clear // Make icon invisible
+        buttonCamera.backgroundColor = .clear // Make background invisible
         buttonCamera.layer.cornerRadius = 25
-        buttonCamera.layer.shadowColor = UIColor.black.cgColor
-        buttonCamera.layer.shadowOffset = CGSize(width: 0, height: 2)
-        buttonCamera.layer.shadowRadius = 4
-        buttonCamera.layer.shadowOpacity = 0.2
+        // Remove shadows since button is invisible
         buttonCamera.translatesAutoresizingMaskIntoConstraints = false
         self.addSubview(buttonCamera)
     }
     
     func setupProfileButton() {
+//        buttonProfile = UIButton(type: .system)
+//        buttonProfile.setImage(UIImage(systemName: "person.circle.fill"), for: .normal)
+//        buttonProfile.tintColor = .systemBlue
+//        buttonProfile.backgroundColor = .white.withAlphaComponent(0.9)
+//        buttonProfile.layer.cornerRadius = 30
+//        buttonProfile.layer.shadowColor = UIColor.black.cgColor
+//        buttonProfile.layer.shadowOffset = CGSize(width: 0, height: 2)
+//        buttonProfile.layer.shadowRadius = 4
+//        buttonProfile.layer.shadowOpacity = 0.2
+//        buttonProfile.translatesAutoresizingMaskIntoConstraints = false
+//        self.addSubview(buttonProfile)
         buttonProfile = UIButton(type: .system)
-        buttonProfile.setImage(UIImage(systemName: "person.circle.fill"), for: .normal)
-        buttonProfile.tintColor = .systemBlue
-        buttonProfile.backgroundColor = .white.withAlphaComponent(0.9)
-        buttonProfile.layer.cornerRadius = 25
-        buttonProfile.layer.shadowColor = UIColor.black.cgColor
-        buttonProfile.layer.shadowOffset = CGSize(width: 0, height: 2)
-        buttonProfile.layer.shadowRadius = 4
-        buttonProfile.layer.shadowOpacity = 0.2
-        buttonProfile.translatesAutoresizingMaskIntoConstraints = false
-        self.addSubview(buttonProfile)
+         buttonProfile.setImage(UIImage(systemName: "person.circle.fill"), for: .normal)
+         buttonProfile.tintColor = .clear // Make icon invisible
+         buttonProfile.backgroundColor = .clear // Make background invisible
+         buttonProfile.layer.cornerRadius = 30
+         // Remove shadows since button is invisible
+         buttonProfile.translatesAutoresizingMaskIntoConstraints = false
+         self.addSubview(buttonProfile)
     }
     
     func setupGetStartedButton() {
@@ -92,7 +108,7 @@ class MainView: UIView {
         buttonFridge.setTitleColor(.white, for: .normal)
         buttonFridge.layer.cornerRadius = 12
         buttonFridge.layer.shadowColor = UIColor.black.cgColor
-        buttonFridge.layer.shadowOffset = CGSize(width: 0, height: 2)
+        buttonFridge.layer.shadowOffset = CGSize(width: 0, height: 15)
         buttonFridge.layer.shadowRadius = 4
         buttonFridge.layer.shadowOpacity = 0.2
         buttonFridge.translatesAutoresizingMaskIntoConstraints = false
@@ -135,37 +151,37 @@ class MainView: UIView {
             imageViewHome.topAnchor.constraint(equalTo: self.topAnchor, constant: -10),
             imageViewHome.leadingAnchor.constraint(equalTo: self.leadingAnchor),
             imageViewHome.trailingAnchor.constraint(equalTo: self.trailingAnchor),
-            imageViewHome.bottomAnchor.constraint(equalTo: self.bottomAnchor, constant: -10),
-
+            imageViewHome.bottomAnchor.constraint(equalTo: self.bottomAnchor),
+            
             // Camera Button - TOP LEFT CORNER (Brought to front with higher z-index)
             buttonCamera.topAnchor.constraint(equalTo: self.safeAreaLayoutGuide.topAnchor, constant: 8),
             buttonCamera.leadingAnchor.constraint(equalTo: self.leadingAnchor, constant: 20),
-            buttonCamera.widthAnchor.constraint(equalToConstant: 50),
-            buttonCamera.heightAnchor.constraint(equalToConstant: 50),
+            buttonCamera.widthAnchor.constraint(equalToConstant: 60),
+            buttonCamera.heightAnchor.constraint(equalToConstant: 60),
             
             // Profile Button - TOP RIGHT CORNER (Brought to front with higher z-index)
-            buttonProfile.topAnchor.constraint(equalTo: self.safeAreaLayoutGuide.topAnchor, constant: 8),
+            buttonProfile.topAnchor.constraint(equalTo: self.safeAreaLayoutGuide.topAnchor, constant: 15),
             buttonProfile.trailingAnchor.constraint(equalTo: self.trailingAnchor, constant: -20),
-            buttonProfile.widthAnchor.constraint(equalToConstant: 50),
-            buttonProfile.heightAnchor.constraint(equalToConstant: 50),
+            buttonProfile.widthAnchor.constraint(equalToConstant: 60),
+            buttonProfile.heightAnchor.constraint(equalToConstant: 60),
             
             // Fridge Button
-            buttonFridge.bottomAnchor.constraint(equalTo: self.safeAreaLayoutGuide.bottomAnchor, constant: -140),
+            buttonFridge.bottomAnchor.constraint(equalTo: self.safeAreaLayoutGuide.bottomAnchor, constant: -90),//120
             buttonFridge.leadingAnchor.constraint(equalTo: self.leadingAnchor, constant: 32),
-            buttonFridge.trailingAnchor.constraint(equalTo: self.trailingAnchor, constant: -32),
-            buttonFridge.heightAnchor.constraint(equalToConstant: 56),
+            buttonFridge.trailingAnchor.constraint(equalTo: self.trailingAnchor, constant: -195), //195
+            buttonFridge.heightAnchor.constraint(equalToConstant: 220), //190 //250
             
             // Pantry Button
-            buttonPantry.bottomAnchor.constraint(equalTo: self.safeAreaLayoutGuide.bottomAnchor, constant: -76),
-            buttonPantry.leadingAnchor.constraint(equalTo: self.leadingAnchor, constant: 32),
-            buttonPantry.trailingAnchor.constraint(equalTo: self.trailingAnchor, constant: -32),
-            buttonPantry.heightAnchor.constraint(equalToConstant: 56),
+            buttonPantry.bottomAnchor.constraint(equalTo: self.safeAreaLayoutGuide.bottomAnchor, constant: -100),
+            buttonPantry.leadingAnchor.constraint(equalTo: self.leadingAnchor, constant: 230),
+            buttonPantry.trailingAnchor.constraint(equalTo: self.trailingAnchor, constant: -50),
+            buttonPantry.heightAnchor.constraint(equalToConstant: 100),
             
             // Freezer Button
-            buttonFreezer.bottomAnchor.constraint(equalTo: self.safeAreaLayoutGuide.bottomAnchor, constant: -12),
+            buttonFreezer.bottomAnchor.constraint(equalTo: self.safeAreaLayoutGuide.bottomAnchor, constant: -310),
             buttonFreezer.leadingAnchor.constraint(equalTo: self.leadingAnchor, constant: 32),
-            buttonFreezer.trailingAnchor.constraint(equalTo: self.trailingAnchor, constant: -32),
-            buttonFreezer.heightAnchor.constraint(equalToConstant: 56),
+            buttonFreezer.trailingAnchor.constraint(equalTo: self.trailingAnchor, constant: -195),
+            buttonFreezer.heightAnchor.constraint(equalToConstant: 110),
             
             // Get Started Button - centered at bottom (only visible when logged out)
             buttonGetStarted.bottomAnchor.constraint(equalTo: self.safeAreaLayoutGuide.bottomAnchor, constant: -32),
