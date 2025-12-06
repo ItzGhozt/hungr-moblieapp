@@ -63,12 +63,12 @@ class CookbookView: UIView {
             imageViewBook.bottomAnchor.constraint(equalTo: self.bottomAnchor),
             
             // Cookbook Title
-            labelCookbookTitle.topAnchor.constraint(equalTo: self.safeAreaLayoutGuide.topAnchor, constant: 8),
+            labelCookbookTitle.topAnchor.constraint(equalTo: self.safeAreaLayoutGuide.topAnchor, constant: 5),
             labelCookbookTitle.leadingAnchor.constraint(equalTo: self.leadingAnchor, constant: 16),
             labelCookbookTitle.trailingAnchor.constraint(equalTo: self.trailingAnchor, constant: -16),
             
             // Table View for recipes - moved down to sit on the book pages
-            tableViewRecipes.topAnchor.constraint(equalTo: self.safeAreaLayoutGuide.topAnchor, constant: 120),
+            tableViewRecipes.topAnchor.constraint(equalTo: self.safeAreaLayoutGuide.topAnchor, constant: 30),
             tableViewRecipes.leadingAnchor.constraint(equalTo: self.safeAreaLayoutGuide.leadingAnchor, constant: 8),
             tableViewRecipes.trailingAnchor.constraint(equalTo: self.safeAreaLayoutGuide.trailingAnchor, constant: -8),
             tableViewRecipes.bottomAnchor.constraint(equalTo: self.safeAreaLayoutGuide.bottomAnchor, constant: -8)
