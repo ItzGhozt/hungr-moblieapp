@@ -26,6 +26,9 @@ class FridgeViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        HelpButtonHelper.addHelpButton(to: self, message: HelpButtonHelper.freezerHelp)
+
+        
         title = "Fridge"
         navigationController?.navigationBar.prefersLargeTitles = true
         

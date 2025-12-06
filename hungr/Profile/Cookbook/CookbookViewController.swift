@@ -28,6 +28,9 @@ class CookbookViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        HelpButtonHelper.addHelpButton(to: self, message: HelpButtonHelper.cookbookHelp)
+
+        
         title = cookbookName ?? "Cookbook"
         navigationController?.navigationBar.prefersLargeTitles = true
         
@@ -56,6 +59,9 @@ class CookbookViewController: UIViewController {
         // Reload recipes when coming back from detail view
         loadRecipes()
     }
+    
+    
+    
     
     @objc func onAddRecipeTapped() {
         let alert = UIAlertController(

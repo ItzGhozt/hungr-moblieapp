@@ -29,6 +29,9 @@ class RecipeDetailViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        HelpButtonHelper.addHelpButton(to: self, message: HelpButtonHelper.recipeDetailHelp)
+
+        
         title = recipeTitle ?? "Recipe"
         navigationController?.navigationBar.prefersLargeTitles = false
         

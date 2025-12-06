@@ -26,6 +26,9 @@ class PantryViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        HelpButtonHelper.addHelpButton(to: self, message: HelpButtonHelper.pantryHelp)
+
+        
         title = "Pantry"
         navigationController?.navigationBar.prefersLargeTitles = true
         

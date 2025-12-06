@@ -30,6 +30,9 @@ class ProfileViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        HelpButtonHelper.addHelpButton(to: self, message: HelpButtonHelper.profileHelp)
+
+        
         title = "Profile"
         navigationController?.navigationBar.prefersLargeTitles = true
         
@@ -55,6 +58,7 @@ class ProfileViewController: UIViewController {
         loadUserProfile()
         loadCookbooks()
     }
+    
     
     @objc func onEditTapped() {
         isEditMode.toggle()

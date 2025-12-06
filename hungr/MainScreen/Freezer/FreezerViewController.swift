@@ -25,6 +25,8 @@ class FreezerViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        HelpButtonHelper.addHelpButton(to: self, message: HelpButtonHelper.fridgeHelp)
+
         
         title = "Freezer"
         navigationController?.navigationBar.prefersLargeTitles = true
