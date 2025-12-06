@@ -21,7 +21,6 @@ class MainViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        HelpButtonHelper.addHelpButton(to: self, message: HelpButtonHelper.homeHelp)
 
         
         // Remove title
@@ -73,6 +72,9 @@ class MainViewController: UIViewController {
             mainView.buttonFridge.isHidden = false
             mainView.buttonPantry.isHidden = false
             mainView.buttonFreezer.isHidden = false
+            
+            // Show help button when logged in
+            HelpButtonHelper.addHelpButton(to: self, message: HelpButtonHelper.homeHelp)
         } else {
             // User is not logged in
             mainView.buttonGetStarted.isHidden = false
@@ -81,6 +83,15 @@ class MainViewController: UIViewController {
             mainView.buttonFridge.isHidden = true
             mainView.buttonPantry.isHidden = true
             mainView.buttonFreezer.isHidden = true
+            
+            // Remove help button when not logged in
+            for subview in view.subviews {
+                if let button = subview as? UIButton,
+                   let image = button.imageView?.image,
+                   image == UIImage(systemName: "questionmark.circle.fill") {
+                    button.removeFromSuperview()
+                }
+            }
         }
     }
     

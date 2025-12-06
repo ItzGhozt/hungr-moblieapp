@@ -6,13 +6,6 @@
 //
 
 
-//
-//  PantryItemTableViewCell.swift
-//  hungr
-//
-//  Pantry item table view cell
-//
-
 import UIKit
 
 protocol PantryItemTableViewCellDelegate: AnyObject {

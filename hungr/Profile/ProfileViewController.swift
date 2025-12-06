@@ -5,6 +5,7 @@
 //  Profile screen controller
 //
 
+
 import UIKit
 import FirebaseAuth
 import FirebaseFirestore
@@ -25,13 +26,12 @@ class ProfileViewController: UIViewController {
     
     override func loadView() {
         view = profileView
+        HelpButtonHelper.addHelpButton(to: self, message: HelpButtonHelper.profileHelp)
+
     }
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
-        HelpButtonHelper.addHelpButton(to: self, message: HelpButtonHelper.profileHelp)
-
         
         title = "Profile"
         navigationController?.navigationBar.prefersLargeTitles = true
@@ -55,10 +55,12 @@ class ProfileViewController: UIViewController {
         
         currentUser = Auth.auth().currentUser
         
+        setupProfileImageTap()
+        
         loadUserProfile()
         loadCookbooks()
+        loadProfileImage()
     }
-    
     
     @objc func onEditTapped() {
         isEditMode.toggle()
@@ -403,5 +405,60 @@ class ProfileViewController: UIViewController {
         let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
         alert.addAction(UIAlertAction(title: "OK", style: .default))
         present(alert, animated: true)
+    }
+}
+
+extension ProfileViewController: UIImagePickerControllerDelegate, UINavigationControllerDelegate {
+    
+    func setupProfileImageTap() {
+        let tap = UITapGestureRecognizer(target: self, action: #selector(onProfileImageTapped))
+        profileView.imageViewProfile.isUserInteractionEnabled = true
+        profileView.imageViewProfile.addGestureRecognizer(tap)
+    }
+    
+    @objc func onProfileImageTapped() {
+        let picker = UIImagePickerController()
+        picker.delegate = self
+        picker.sourceType = .photoLibrary
+        picker.allowsEditing = true
+        present(picker, animated: true)
+    }
+    
+    func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
+        picker.dismiss(animated: true)
+        
+        if let image = info[.editedImage] as? UIImage ?? info[.originalImage] as? UIImage {
+            profileView.imageViewProfile.image = image
+            profileView.imageViewProfile.contentMode = .scaleAspectFill
+            saveProfileImage(image)
+        }
+    }
+    
+    func saveProfileImage(_ image: UIImage) {
+        guard let userId = currentUser?.uid,
+              let imageData = image.jpegData(compressionQuality: 0.7) else { return }
+        
+        let base64String = imageData.base64EncodedString()
+        
+        database.collection("users").document(userId).setData([
+            "profileImage": base64String
+        ], merge: true)
+    }
+    
+    func loadProfileImage() {
+        guard let userId = currentUser?.uid else { return }
+        
+        database.collection("users").document(userId).getDocument { [weak self] document, error in
+            if let data = document?.data(),
+               let base64String = data["profileImage"] as? String,
+               let imageData = Data(base64Encoded: base64String),
+               let image = UIImage(data: imageData) {
+                
+                DispatchQueue.main.async {
+                    self?.profileView.imageViewProfile.image = image
+                    self?.profileView.imageViewProfile.contentMode = .scaleAspectFill
+                }
+            }
+        }
     }
 }

@@ -26,7 +26,7 @@ class PantryViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        HelpButtonHelper.addHelpButton(to: self, message: HelpButtonHelper.pantryHelp)
+        HelpButtonHelper.addHelpButton(to: self, message: HelpButtonHelper.profileHelp)
 
         
         title = "Pantry"

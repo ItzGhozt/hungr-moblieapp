@@ -19,7 +19,7 @@ class ProfileView: UIView {
         super.init(frame: frame)
         self.backgroundColor = .systemBackground
         
-        setupProfileImage()
+        setupProfileImageView()
         setupUsernameField()
         setupBioTextView()
         setupMyCookbooksLabel()
@@ -28,11 +28,14 @@ class ProfileView: UIView {
         initConstraints()
     }
     
-    func setupProfileImage() {
+    func setupProfileImageView() {
         imageViewProfile = UIImageView()
-        imageViewProfile.image = UIImage(systemName: "person.circle.fill")
-        imageViewProfile.tintColor = .systemGray
-        imageViewProfile.contentMode = .scaleAspectFit
+        imageViewProfile.image = UIImage(systemName: "person.crop.circle.fill")
+        imageViewProfile.contentMode = .scaleAspectFill
+        imageViewProfile.clipsToBounds = true
+        imageViewProfile.layer.cornerRadius = 40
+        imageViewProfile.layer.borderWidth = 2
+        imageViewProfile.layer.borderColor = UIColor.systemGray4.cgColor
         imageViewProfile.translatesAutoresizingMaskIntoConstraints = false
         self.addSubview(imageViewProfile)
     }
@@ -84,40 +87,34 @@ class ProfileView: UIView {
     
     func initConstraints() {
         NSLayoutConstraint.activate([
-            // Profile Image - LEFT SIDE
             imageViewProfile.topAnchor.constraint(equalTo: self.safeAreaLayoutGuide.topAnchor, constant: 24),
             imageViewProfile.leadingAnchor.constraint(equalTo: self.leadingAnchor, constant: 24),
             imageViewProfile.widthAnchor.constraint(equalToConstant: 80),
             imageViewProfile.heightAnchor.constraint(equalToConstant: 80),
             
-            // Username Field - TOP RIGHT, NEXT TO PROFILE IMAGE
             textFieldUsername.topAnchor.constraint(equalTo: imageViewProfile.topAnchor),
             textFieldUsername.leadingAnchor.constraint(equalTo: imageViewProfile.trailingAnchor, constant: 16),
             textFieldUsername.trailingAnchor.constraint(equalTo: self.trailingAnchor, constant: -24),
             textFieldUsername.heightAnchor.constraint(equalToConstant: 30),
             
-            // Bio Text View - BELOW USERNAME, SAME WIDTH AS PROFILE IMAGE HEIGHT
             textViewBio.topAnchor.constraint(equalTo: textFieldUsername.bottomAnchor, constant: 8),
             textViewBio.leadingAnchor.constraint(equalTo: imageViewProfile.trailingAnchor, constant: 16),
             textViewBio.trailingAnchor.constraint(equalTo: self.trailingAnchor, constant: -24),
             textViewBio.bottomAnchor.constraint(lessThanOrEqualTo: imageViewProfile.bottomAnchor),
             
-            // My Cookbooks Label - BELOW PROFILE IMAGE
             labelMyCookbooks.topAnchor.constraint(equalTo: imageViewProfile.bottomAnchor, constant: 40),
             labelMyCookbooks.leadingAnchor.constraint(equalTo: self.leadingAnchor, constant: 24),
             labelMyCookbooks.trailingAnchor.constraint(equalTo: self.trailingAnchor, constant: -24),
             
-            // Add Cookbook Button - BELOW LABEL
             buttonAddCookbook.topAnchor.constraint(equalTo: labelMyCookbooks.bottomAnchor, constant: 16),
             buttonAddCookbook.leadingAnchor.constraint(equalTo: self.leadingAnchor, constant: 24),
             buttonAddCookbook.widthAnchor.constraint(equalToConstant: 100),
-            buttonAddCookbook.heightAnchor.constraint(equalToConstant: 100),
+            buttonAddCookbook.heightAnchor.constraint(equalToConstant: 100)
         ])
     }
     
     func updateProfile(name: String, email: String) {
         textFieldUsername.text = name
-        // You can use email elsewhere or store it
     }
     
     required init?(coder: NSCoder) {
@@ -125,14 +122,12 @@ class ProfileView: UIView {
     }
 }
 
-// MARK: - UITextViewDelegate
 extension ProfileView: UITextViewDelegate {
     func textView(_ textView: UITextView, shouldChangeTextIn range: NSRange, replacementText text: String) -> Bool {
         let currentText = textView.text ?? ""
         guard let stringRange = Range(range, in: currentText) else { return false }
         let updatedText = currentText.replacingCharacters(in: stringRange, with: text)
         
-        // Max character limit: 150 characters
         return updatedText.count <= 150
     }
 }
