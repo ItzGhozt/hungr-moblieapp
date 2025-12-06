@@ -40,6 +40,7 @@ class CookbookView: UIView {
         labelCookbookTitle.font = UIFont.systemFont(ofSize: 24, weight: .bold)
         labelCookbookTitle.textAlignment = .center
         labelCookbookTitle.textColor = .label
+        labelCookbookTitle.isHidden = true // Hide since navigation bar shows title
         labelCookbookTitle.translatesAutoresizingMaskIntoConstraints = false
         self.addSubview(labelCookbookTitle)
     }
@@ -66,8 +67,8 @@ class CookbookView: UIView {
             labelCookbookTitle.leadingAnchor.constraint(equalTo: self.leadingAnchor, constant: 16),
             labelCookbookTitle.trailingAnchor.constraint(equalTo: self.trailingAnchor, constant: -16),
             
-            // Table View for recipes
-            tableViewRecipes.topAnchor.constraint(equalTo: labelCookbookTitle.bottomAnchor, constant: 16),
+            // Table View for recipes - moved down to sit on the book pages
+            tableViewRecipes.topAnchor.constraint(equalTo: self.safeAreaLayoutGuide.topAnchor, constant: 120),
             tableViewRecipes.leadingAnchor.constraint(equalTo: self.safeAreaLayoutGuide.leadingAnchor, constant: 8),
             tableViewRecipes.trailingAnchor.constraint(equalTo: self.safeAreaLayoutGuide.trailingAnchor, constant: -8),
             tableViewRecipes.bottomAnchor.constraint(equalTo: self.safeAreaLayoutGuide.bottomAnchor, constant: -8)

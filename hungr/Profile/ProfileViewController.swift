@@ -21,6 +21,8 @@ class ProfileViewController: UIViewController {
     var cookbookButtons: [UIButton] = []
     var cookbookLabels: [UILabel] = []
     
+    var isEditMode = false
+    
     override func loadView() {
         view = profileView
     }
@@ -31,15 +33,21 @@ class ProfileViewController: UIViewController {
         title = "Profile"
         navigationController?.navigationBar.prefersLargeTitles = true
         
-        // Add Logout button to navigation bar
-        navigationItem.rightBarButtonItem = UIBarButtonItem(
-            title: "Logout",
-            style: .plain,
-            target: self,
-            action: #selector(onLogoutTapped)
-        )
+        navigationItem.rightBarButtonItems = [
+            UIBarButtonItem(
+                title: "Logout",
+                style: .plain,
+                target: self,
+                action: #selector(onLogoutTapped)
+            ),
+            UIBarButtonItem(
+                title: "Edit",
+                style: .plain,
+                target: self,
+                action: #selector(onEditTapped)
+            )
+        ]
         
-        // Add button target for Add Cookbook button only
         profileView.buttonAddCookbook.addTarget(self, action: #selector(onAddCookbookTapped), for: .touchUpInside)
         
         currentUser = Auth.auth().currentUser
@@ -47,9 +55,58 @@ class ProfileViewController: UIViewController {
         loadUserProfile()
         loadCookbooks()
     }
+    
+    @objc func onEditTapped() {
+        isEditMode.toggle()
+        
+        if isEditMode {
+            navigationItem.rightBarButtonItems?[1].title = "Done"
+            showDeleteButtons()
+        } else {
+            navigationItem.rightBarButtonItems?[1].title = "Edit"
+            hideDeleteButtons()
+        }
+    }
+    
+    func showDeleteButtons() {
+        for (index, button) in cookbookButtons.enumerated() {
+            let deleteButton = UIButton(type: .custom)
+            deleteButton.setImage(UIImage(systemName: "minus.circle.fill"), for: .normal)
+            deleteButton.tintColor = .systemRed
+            deleteButton.backgroundColor = .systemBackground
+            deleteButton.layer.cornerRadius = 12
+            deleteButton.tag = index + 1000
+            deleteButton.translatesAutoresizingMaskIntoConstraints = false
+            deleteButton.addTarget(self, action: #selector(onDeleteCookbookTapped(_:)), for: .touchUpInside)
+            
+            profileView.addSubview(deleteButton)
+            
+            NSLayoutConstraint.activate([
+                deleteButton.topAnchor.constraint(equalTo: button.topAnchor, constant: -8),
+                deleteButton.trailingAnchor.constraint(equalTo: button.trailingAnchor, constant: 8),
+                deleteButton.widthAnchor.constraint(equalToConstant: 24),
+                deleteButton.heightAnchor.constraint(equalToConstant: 24)
+            ])
+        }
+    }
+    
+    func hideDeleteButtons() {
+        for subview in profileView.subviews {
+            if let button = subview as? UIButton, button.tag >= 1000 {
+                button.removeFromSuperview()
+            }
+        }
+    }
+    
+    @objc func onDeleteCookbookTapped(_ sender: UIButton) {
+        let index = sender.tag - 1000
+        guard index < cookbooks.count else { return }
+        
+        let cookbook = cookbooks[index]
+        confirmDeleteCookbook(cookbookId: cookbook.id, name: cookbook.name)
+    }
 
     @objc func onAddCookbookTapped() {
-        // Show alert to enter cookbook name
         let alert = UIAlertController(
             title: "New Cookbook",
             message: "Enter a name for your cookbook",
@@ -83,7 +140,6 @@ class ProfileViewController: UIViewController {
         let cookbookColors = ["cookbook_green", "cookbook_yellow", "cookbook_pink"]
         let randomColor = cookbookColors.randomElement() ?? "cookbook_green"
         
-        // Create a new document reference to get the ID
         let docRef = database.collection("cookbooks").document()
         let cookbookId = docRef.documentID
         
@@ -100,7 +156,6 @@ class ProfileViewController: UIViewController {
                 return
             }
             
-            // Add to local array and UI
             self?.cookbooks.append((id: cookbookId, name: name, color: randomColor))
             if let index = self?.cookbooks.count {
                 self?.addCookbookToView(name: name, color: randomColor, at: index - 1)
@@ -109,7 +164,9 @@ class ProfileViewController: UIViewController {
     }
     
     func loadCookbooks() {
-        guard let userId = currentUser?.uid else { return }
+        guard let userId = currentUser?.uid else {
+            return
+        }
         
         database.collection("cookbooks")
             .whereField("userId", isEqualTo: userId)
@@ -119,16 +176,16 @@ class ProfileViewController: UIViewController {
                     return
                 }
                 
-                guard let documents = snapshot?.documents else { return }
+                guard let documents = snapshot?.documents else {
+                    return
+                }
                 
-                // Clear existing cookbooks
                 self?.cookbooks.removeAll()
                 self?.cookbookButtons.forEach { $0.removeFromSuperview() }
                 self?.cookbookLabels.forEach { $0.removeFromSuperview() }
                 self?.cookbookButtons.removeAll()
                 self?.cookbookLabels.removeAll()
                 
-                // Add each cookbook
                 for (index, document) in documents.enumerated() {
                     let data = document.data()
                     let id = document.documentID
@@ -142,7 +199,6 @@ class ProfileViewController: UIViewController {
     }
     
     func addCookbookToView(name: String, color: String, at index: Int) {
-        // Create container button
         let button = UIButton(type: .custom)
         button.backgroundColor = .clear
         button.layer.cornerRadius = 12
@@ -151,15 +207,12 @@ class ProfileViewController: UIViewController {
         button.tag = index
         button.addTarget(self, action: #selector(onCookbookTapped(_:)), for: .touchUpInside)
         
-        // Create image view to hold the cookbook icon
         let imageView = UIImageView()
         imageView.translatesAutoresizingMaskIntoConstraints = false
         imageView.contentMode = .scaleAspectFit
         imageView.isUserInteractionEnabled = false
         
-        // Try to load the image
         if let image = UIImage(named: color) {
-            // Force the image to render as original (no tint)
             imageView.image = image.withRenderingMode(.alwaysOriginal)
         } else {
             imageView.image = UIImage(systemName: "book.fill")
@@ -168,7 +221,6 @@ class ProfileViewController: UIViewController {
         
         button.addSubview(imageView)
         
-        // Constrain imageView to fill the button with padding
         NSLayoutConstraint.activate([
             imageView.topAnchor.constraint(equalTo: button.topAnchor, constant: 5),
             imageView.leadingAnchor.constraint(equalTo: button.leadingAnchor, constant: 5),
@@ -179,7 +231,6 @@ class ProfileViewController: UIViewController {
         profileView.addSubview(button)
         cookbookButtons.append(button)
         
-        // Create label for cookbook name
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
         label.text = name
@@ -191,7 +242,6 @@ class ProfileViewController: UIViewController {
         profileView.addSubview(label)
         cookbookLabels.append(label)
         
-        // Calculate position (3 cookbooks per row)
         let row = index / 3
         let column = index % 3
         let spacing: CGFloat = 16
@@ -203,13 +253,11 @@ class ProfileViewController: UIViewController {
             button.widthAnchor.constraint(equalToConstant: buttonSize),
             button.heightAnchor.constraint(equalToConstant: buttonSize),
             
-            // Position label below button
             label.topAnchor.constraint(equalTo: button.bottomAnchor, constant: 4),
             label.leadingAnchor.constraint(equalTo: button.leadingAnchor),
             label.trailingAnchor.constraint(equalTo: button.trailingAnchor)
         ])
         
-        // Update add button position
         updateAddButtonPosition()
     }
     
@@ -233,26 +281,17 @@ class ProfileViewController: UIViewController {
     }
     
     @objc func onCookbookTapped(_ sender: UIButton) {
+        if isEditMode {
+            return
+        }
+        
         let index = sender.tag
         let cookbook = cookbooks[index]
         
-        // Show action sheet with options
-        let actionSheet = UIAlertController(title: cookbook.name, message: "Choose an action", preferredStyle: .actionSheet)
-        
-        actionSheet.addAction(UIAlertAction(title: "Open Cookbook", style: .default) { [weak self] _ in
-            let cookbookVC = CookbookViewController()
-            cookbookVC.cookbookId = cookbook.id
-            cookbookVC.cookbookName = cookbook.name
-            self?.navigationController?.pushViewController(cookbookVC, animated: true)
-        })
-        
-        actionSheet.addAction(UIAlertAction(title: "Delete Cookbook", style: .destructive) { [weak self] _ in
-            self?.confirmDeleteCookbook(cookbookId: cookbook.id, name: cookbook.name)
-        })
-        
-        actionSheet.addAction(UIAlertAction(title: "Cancel", style: .cancel))
-        
-        present(actionSheet, animated: true)
+        let cookbookVC = CookbookViewController()
+        cookbookVC.cookbookId = cookbook.id
+        cookbookVC.cookbookName = cookbook.name
+        navigationController?.pushViewController(cookbookVC, animated: true)
     }
     
     func confirmDeleteCookbook(cookbookId: String, name: String) {
@@ -271,7 +310,6 @@ class ProfileViewController: UIViewController {
     }
     
     func deleteCookbook(cookbookId: String) {
-        // First, delete all recipes in this cookbook
         database.collection("recipes")
             .whereField("cookbookId", isEqualTo: cookbookId)
             .getDocuments { [weak self] snapshot, error in
@@ -280,27 +318,25 @@ class ProfileViewController: UIViewController {
                     return
                 }
                 
-                // Delete each recipe
                 let batch = self?.database.batch()
                 snapshot?.documents.forEach { document in
                     batch?.deleteDocument(document.reference)
                 }
                 
-                // Commit batch delete
                 batch?.commit { error in
                     if let error = error {
                         self?.showAlert(title: "Error", message: "Failed to delete recipes: \(error.localizedDescription)")
                         return
                     }
                     
-                    // Now delete the cookbook itself
                     self?.database.collection("cookbooks").document(cookbookId).delete { error in
                         if let error = error {
                             self?.showAlert(title: "Error", message: "Failed to delete cookbook: \(error.localizedDescription)")
                             return
                         }
                         
-                        // Reload cookbooks
+                        self?.isEditMode = false
+                        self?.navigationItem.rightBarButtonItems?[1].title = "Edit"
                         self?.loadCookbooks()
                     }
                 }
