@@ -17,7 +17,7 @@ class ProfileViewController: UIViewController {
     
     var currentUser: FirebaseAuth.User?
     
-    var cookbooks: [(name: String, color: String)] = []
+    var cookbooks: [(id: String, name: String, color: String)] = []
     var cookbookButtons: [UIButton] = []
     var cookbookLabels: [UILabel] = []
     
@@ -45,6 +45,7 @@ class ProfileViewController: UIViewController {
         currentUser = Auth.auth().currentUser
         
         loadUserProfile()
+        loadCookbooks()
     }
 
     @objc func onAddCookbookTapped() {
@@ -74,11 +75,83 @@ class ProfileViewController: UIViewController {
     }
     
     func createCookbook(name: String) {
+        guard let userId = currentUser?.uid else {
+            showAlert(title: "Error", message: "User not authenticated")
+            return
+        }
+        
         let cookbookColors = ["cookbook_green", "cookbook_yellow", "cookbook_pink"]
         let randomColor = cookbookColors.randomElement() ?? "cookbook_green"
         
-        cookbooks.append((name: name, color: randomColor))
-        addCookbookToView(name: name, color: randomColor, at: cookbooks.count - 1)
+        // Create a new document reference to get the ID
+        let docRef = database.collection("cookbooks").document()
+        let cookbookId = docRef.documentID
+        
+        let cookbookData: [String: Any] = [
+            "name": name,
+            "color": randomColor,
+            "userId": userId,
+            "createdAt": FieldValue.serverTimestamp()
+        ]
+        
+        docRef.setData(cookbookData) { [weak self] error in
+            if let error = error {
+                self?.showAlert(title: "Error", message: "Failed to create cookbook: \(error.localizedDescription)")
+                return
+            }
+            
+            // Add to local array and UI
+            self?.cookbooks.append((id: cookbookId, name: name, color: randomColor))
+            if let index = self?.cookbooks.count {
+                self?.addCookbookToView(name: name, color: randomColor, at: index - 1)
+            }
+        }
+    }
+    
+    func loadCookbooks() {
+        guard let userId = currentUser?.uid else {
+            print("❌ No user ID found")
+            return
+        }
+        
+        print("🔍 Loading cookbooks for user: \(userId)")
+        
+        database.collection("cookbooks")
+            .whereField("userId", isEqualTo: userId)
+//            .order(by: "createdAt")
+            .getDocuments { [weak self] snapshot, error in
+                if let error = error {
+                    print("❌ Error loading cookbooks: \(error)")
+                    return
+                }
+                
+                guard let documents = snapshot?.documents else {
+                    print("❌ No documents found")
+                    return
+                }
+                
+                print("✅ Found \(documents.count) cookbooks")
+                
+                // Clear existing cookbooks
+                self?.cookbooks.removeAll()
+                self?.cookbookButtons.forEach { $0.removeFromSuperview() }
+                self?.cookbookLabels.forEach { $0.removeFromSuperview() }
+                self?.cookbookButtons.removeAll()
+                self?.cookbookLabels.removeAll()
+                
+                // Add each cookbook
+                for (index, document) in documents.enumerated() {
+                    let data = document.data()
+                    let id = document.documentID
+                    let name = data["name"] as? String ?? "Untitled"
+                    let color = data["color"] as? String ?? "cookbook_green"
+                    
+                    print("📚 Loading cookbook: \(name)")
+                    
+                    self?.cookbooks.append((id: id, name: name, color: color))
+                    self?.addCookbookToView(name: name, color: color, at: index)
+                }
+            }
     }
     
     func addCookbookToView(name: String, color: String, at index: Int) {
@@ -177,6 +250,8 @@ class ProfileViewController: UIViewController {
         let cookbook = cookbooks[index]
         
         let cookbookVC = CookbookViewController()
+        cookbookVC.cookbookId = cookbook.id
+        cookbookVC.cookbookName = cookbook.name
         navigationController?.pushViewController(cookbookVC, animated: true)
     }
     

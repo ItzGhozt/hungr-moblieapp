@@ -11,8 +11,7 @@ class CookbookView: UIView {
     
     var labelCookbookTitle: UILabel!
     var imageViewBook: UIImageView!
-    var textFieldRecipeTitle: UITextField!
-    var textViewRecipeDetails: UITextView!
+    var tableViewRecipes: UITableView!
     
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -20,24 +19,24 @@ class CookbookView: UIView {
         
         setupBookImageView()
         setupCookbookTitleLabel()
-        setupRecipeTitleTextField()
-        setupRecipeDetailsTextView()
+        setupTableViewRecipes()
         
         initConstraints()
     }
     
     func setupBookImageView() {
         imageViewBook = UIImageView()
-        imageViewBook.contentMode = .scaleAspectFill // Fill the screen
+        imageViewBook.contentMode = .scaleAspectFill
         imageViewBook.clipsToBounds = true
         imageViewBook.image = UIImage(named: "cookbookview")
+        imageViewBook.alpha = 0.3 // Make it more subtle so table view is readable
         imageViewBook.translatesAutoresizingMaskIntoConstraints = false
         self.addSubview(imageViewBook)
     }
     
     func setupCookbookTitleLabel() {
         labelCookbookTitle = UILabel()
-        labelCookbookTitle.text = "" // Will be set from controller
+        labelCookbookTitle.text = ""
         labelCookbookTitle.font = UIFont.systemFont(ofSize: 24, weight: .bold)
         labelCookbookTitle.textAlignment = .center
         labelCookbookTitle.textColor = .label
@@ -45,28 +44,13 @@ class CookbookView: UIView {
         self.addSubview(labelCookbookTitle)
     }
     
-    func setupRecipeTitleTextField() {
-        textFieldRecipeTitle = UITextField()
-        textFieldRecipeTitle.placeholder = "Recipe Title"
-        textFieldRecipeTitle.font = UIFont.systemFont(ofSize: 18, weight: .semibold)
-        textFieldRecipeTitle.textAlignment = .left
-        textFieldRecipeTitle.backgroundColor = .clear
-        textFieldRecipeTitle.borderStyle = .none
-        textFieldRecipeTitle.translatesAutoresizingMaskIntoConstraints = false
-        self.addSubview(textFieldRecipeTitle)
-    }
-    
-    func setupRecipeDetailsTextView() {
-        textViewRecipeDetails = UITextView()
-        textViewRecipeDetails.text = "Recipe Details"
-        textViewRecipeDetails.font = UIFont.systemFont(ofSize: 16)
-        textViewRecipeDetails.textAlignment = .left
-        textViewRecipeDetails.backgroundColor = .clear
-        textViewRecipeDetails.textColor = .label
-        textViewRecipeDetails.isEditable = true
-        textViewRecipeDetails.isScrollEnabled = true
-        textViewRecipeDetails.translatesAutoresizingMaskIntoConstraints = false
-        self.addSubview(textViewRecipeDetails)
+    func setupTableViewRecipes() {
+        tableViewRecipes = UITableView()
+        tableViewRecipes.register(RecipeTableViewCell.self, forCellReuseIdentifier: "recipe")
+        tableViewRecipes.separatorStyle = .singleLine
+        tableViewRecipes.backgroundColor = .clear
+        tableViewRecipes.translatesAutoresizingMaskIntoConstraints = false
+        self.addSubview(tableViewRecipes)
     }
     
     func initConstraints() {
@@ -77,22 +61,16 @@ class CookbookView: UIView {
             imageViewBook.trailingAnchor.constraint(equalTo: self.trailingAnchor),
             imageViewBook.bottomAnchor.constraint(equalTo: self.bottomAnchor),
             
-            // Cookbook Title - Above the book pages
-            labelCookbookTitle.topAnchor.constraint(equalTo: self.safeAreaLayoutGuide.topAnchor, constant: 120),
-            labelCookbookTitle.leadingAnchor.constraint(equalTo: self.leadingAnchor, constant: 32),
-            labelCookbookTitle.trailingAnchor.constraint(equalTo: self.trailingAnchor, constant: -32),
+            // Cookbook Title
+            labelCookbookTitle.topAnchor.constraint(equalTo: self.safeAreaLayoutGuide.topAnchor, constant: 8),
+            labelCookbookTitle.leadingAnchor.constraint(equalTo: self.leadingAnchor, constant: 16),
+            labelCookbookTitle.trailingAnchor.constraint(equalTo: self.trailingAnchor, constant: -16),
             
-            // Recipe Title TextField - On the left page
-            textFieldRecipeTitle.topAnchor.constraint(equalTo: labelCookbookTitle.bottomAnchor, constant: 100),
-            textFieldRecipeTitle.leadingAnchor.constraint(equalTo: self.leadingAnchor, constant: 50),
-            textFieldRecipeTitle.trailingAnchor.constraint(equalTo: self.centerXAnchor, constant: -30),
-            textFieldRecipeTitle.heightAnchor.constraint(equalToConstant: 44),
-            
-            // Recipe Details TextView - Below title on left page
-            textViewRecipeDetails.topAnchor.constraint(equalTo: textFieldRecipeTitle.bottomAnchor, constant: 16),
-            textViewRecipeDetails.leadingAnchor.constraint(equalTo: self.leadingAnchor, constant: 50),
-            textViewRecipeDetails.trailingAnchor.constraint(equalTo: self.centerXAnchor, constant: -30),
-            textViewRecipeDetails.bottomAnchor.constraint(equalTo: self.safeAreaLayoutGuide.bottomAnchor, constant: -150)
+            // Table View for recipes
+            tableViewRecipes.topAnchor.constraint(equalTo: labelCookbookTitle.bottomAnchor, constant: 16),
+            tableViewRecipes.leadingAnchor.constraint(equalTo: self.safeAreaLayoutGuide.leadingAnchor, constant: 8),
+            tableViewRecipes.trailingAnchor.constraint(equalTo: self.safeAreaLayoutGuide.trailingAnchor, constant: -8),
+            tableViewRecipes.bottomAnchor.constraint(equalTo: self.safeAreaLayoutGuide.bottomAnchor, constant: -8)
         ])
     }
     
