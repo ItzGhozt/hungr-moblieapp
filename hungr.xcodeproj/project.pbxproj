@@ -10,7 +10,6 @@
 		76D175E32ECE6A0300E594D8 /* FirebaseAuth in Frameworks */ = {isa = PBXBuildFile; productRef = 76D175E22ECE6A0300E594D8 /* FirebaseAuth */; };
 		76D175E52ECE6A0300E594D8 /* FirebaseFirestore in Frameworks */ = {isa = PBXBuildFile; productRef = 76D175E42ECE6A0300E594D8 /* FirebaseFirestore */; };
 		76D175E72ECE6A0300E594D8 /* FirebaseStorage in Frameworks */ = {isa = PBXBuildFile; productRef = 76D175E62ECE6A0300E594D8 /* FirebaseStorage */; };
-		76F89B5D2EE3F58000EF7E57 /* HelpButtonHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 76F89B5C2EE3F58000EF7E57 /* HelpButtonHelper.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -34,7 +33,6 @@
 		76D175242ECE5E1000E594D8 /* hungr.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = hungr.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		76D1753A2ECE5E1100E594D8 /* hungrTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = hungrTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		76D175442ECE5E1100E594D8 /* hungrUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = hungrUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		76F89B5C2EE3F58000EF7E57 /* HelpButtonHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HelpButtonHelper.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
@@ -99,7 +97,6 @@
 		76D1751B2ECE5E1000E594D8 = {
 			isa = PBXGroup;
 			children = (
-				76F89B5C2EE3F58000EF7E57 /* HelpButtonHelper.swift */,
 				76D175262ECE5E1000E594D8 /* hungr */,
 				76D1753D2ECE5E1100E594D8 /* hungrTests */,
 				76D175472ECE5E1100E594D8 /* hungrUITests */,
@@ -267,7 +264,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				76F89B5D2EE3F58000EF7E57 /* HelpButtonHelper.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
