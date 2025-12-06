@@ -2,14 +2,6 @@
 //  RecipeDetailViewController.swift
 //  hungr
 //
-//  Created by Isabel Yeow on 12/5/25.
-//
-
-
-//
-//  RecipeDetailViewController.swift
-//  hungr
-//
 //  Recipe detail screen controller
 //
 
@@ -40,7 +32,6 @@ class RecipeDetailViewController: UIViewController {
         title = recipeTitle ?? "Recipe"
         navigationController?.navigationBar.prefersLargeTitles = false
         
-        // Add Edit button
         navigationItem.rightBarButtonItem = UIBarButtonItem(
             title: "Save",
             style: .done,
@@ -50,11 +41,9 @@ class RecipeDetailViewController: UIViewController {
         
         currentUser = Auth.auth().currentUser
         
-        // Set up text view delegates for placeholder behavior
         recipeDetailView.textViewIngredients.delegate = self
         recipeDetailView.textViewInstructions.delegate = self
         
-        // Load recipe details
         loadRecipeDetails()
     }
     
@@ -105,13 +94,11 @@ class RecipeDetailViewController: UIViewController {
         recipeDetailView.textFieldCookTime.text = recipe.cookTime > 0 ? "\(recipe.cookTime)" : ""
         recipeDetailView.textFieldServings.text = recipe.servings > 0 ? "\(recipe.servings)" : ""
         
-        // Update ingredients
         if !recipe.ingredients.isEmpty {
             recipeDetailView.textViewIngredients.text = recipe.ingredients.joined(separator: "\n")
             recipeDetailView.textViewIngredients.textColor = .label
         }
         
-        // Update instructions
         if !recipe.instructions.isEmpty {
             recipeDetailView.textViewInstructions.text = recipe.instructions.joined(separator: "\n")
             recipeDetailView.textViewInstructions.textColor = .label
@@ -121,14 +108,12 @@ class RecipeDetailViewController: UIViewController {
     @objc func onSaveTapped() {
         guard let recipeId = recipeId else { return }
         
-        // Get values from fields
         let title = recipeDetailView.textFieldTitle.text ?? ""
         let description = recipeDetailView.textViewDescription.text ?? ""
         let prepTime = Int(recipeDetailView.textFieldPrepTime.text ?? "") ?? 0
         let cookTime = Int(recipeDetailView.textFieldCookTime.text ?? "") ?? 0
         let servings = Int(recipeDetailView.textFieldServings.text ?? "") ?? 0
         
-        // Parse ingredients (one per line)
         var ingredients: [String] = []
         if recipeDetailView.textViewIngredients.textColor != .lightGray {
             ingredients = recipeDetailView.textViewIngredients.text
@@ -137,7 +122,6 @@ class RecipeDetailViewController: UIViewController {
                 .filter { !$0.isEmpty }
         }
         
-        // Parse instructions (one per line)
         var instructions: [String] = []
         if recipeDetailView.textViewInstructions.textColor != .lightGray {
             instructions = recipeDetailView.textViewInstructions.text
@@ -146,13 +130,11 @@ class RecipeDetailViewController: UIViewController {
                 .filter { !$0.isEmpty }
         }
         
-        // Validate required fields
         guard !title.isEmpty, !description.isEmpty else {
             showAlert(title: "Error", message: "Title and description are required")
             return
         }
         
-        // Update recipe in Firestore
         let recipeData: [String: Any] = [
             "title": title,
             "description": description,
@@ -170,7 +152,6 @@ class RecipeDetailViewController: UIViewController {
                 return
             }
             
-            // Show success and go back
             let alert = UIAlertController(title: "Success", message: "Recipe saved!", preferredStyle: .alert)
             alert.addAction(UIAlertAction(title: "OK", style: .default) { _ in
                 self?.navigationController?.popViewController(animated: true)
@@ -186,7 +167,6 @@ class RecipeDetailViewController: UIViewController {
     }
 }
 
-// MARK: - TextView Delegate for Placeholder
 extension RecipeDetailViewController: UITextViewDelegate {
     func textViewDidBeginEditing(_ textView: UITextView) {
         if textView.textColor == .lightGray {
@@ -208,7 +188,6 @@ extension RecipeDetailViewController: UITextViewDelegate {
     }
 }
 
-// MARK: - Recipe Model
 struct Recipe {
     let id: String
     let title: String

@@ -109,28 +109,17 @@ class ProfileViewController: UIViewController {
     }
     
     func loadCookbooks() {
-        guard let userId = currentUser?.uid else {
-            print("❌ No user ID found")
-            return
-        }
-        
-        print("🔍 Loading cookbooks for user: \(userId)")
+        guard let userId = currentUser?.uid else { return }
         
         database.collection("cookbooks")
             .whereField("userId", isEqualTo: userId)
-//            .order(by: "createdAt")
             .getDocuments { [weak self] snapshot, error in
                 if let error = error {
-                    print("❌ Error loading cookbooks: \(error)")
+                    print("Error loading cookbooks: \(error)")
                     return
                 }
                 
-                guard let documents = snapshot?.documents else {
-                    print("❌ No documents found")
-                    return
-                }
-                
-                print("✅ Found \(documents.count) cookbooks")
+                guard let documents = snapshot?.documents else { return }
                 
                 // Clear existing cookbooks
                 self?.cookbooks.removeAll()
@@ -145,8 +134,6 @@ class ProfileViewController: UIViewController {
                     let id = document.documentID
                     let name = data["name"] as? String ?? "Untitled"
                     let color = data["color"] as? String ?? "cookbook_green"
-                    
-                    print("📚 Loading cookbook: \(name)")
                     
                     self?.cookbooks.append((id: id, name: name, color: color))
                     self?.addCookbookToView(name: name, color: color, at: index)
@@ -249,10 +236,75 @@ class ProfileViewController: UIViewController {
         let index = sender.tag
         let cookbook = cookbooks[index]
         
-        let cookbookVC = CookbookViewController()
-        cookbookVC.cookbookId = cookbook.id
-        cookbookVC.cookbookName = cookbook.name
-        navigationController?.pushViewController(cookbookVC, animated: true)
+        // Show action sheet with options
+        let actionSheet = UIAlertController(title: cookbook.name, message: "Choose an action", preferredStyle: .actionSheet)
+        
+        actionSheet.addAction(UIAlertAction(title: "Open Cookbook", style: .default) { [weak self] _ in
+            let cookbookVC = CookbookViewController()
+            cookbookVC.cookbookId = cookbook.id
+            cookbookVC.cookbookName = cookbook.name
+            self?.navigationController?.pushViewController(cookbookVC, animated: true)
+        })
+        
+        actionSheet.addAction(UIAlertAction(title: "Delete Cookbook", style: .destructive) { [weak self] _ in
+            self?.confirmDeleteCookbook(cookbookId: cookbook.id, name: cookbook.name)
+        })
+        
+        actionSheet.addAction(UIAlertAction(title: "Cancel", style: .cancel))
+        
+        present(actionSheet, animated: true)
+    }
+    
+    func confirmDeleteCookbook(cookbookId: String, name: String) {
+        let alert = UIAlertController(
+            title: "Delete \(name)?",
+            message: "This will also delete all recipes in this cookbook. This action cannot be undone.",
+            preferredStyle: .alert
+        )
+        
+        alert.addAction(UIAlertAction(title: "Cancel", style: .cancel))
+        alert.addAction(UIAlertAction(title: "Delete", style: .destructive) { [weak self] _ in
+            self?.deleteCookbook(cookbookId: cookbookId)
+        })
+        
+        present(alert, animated: true)
+    }
+    
+    func deleteCookbook(cookbookId: String) {
+        // First, delete all recipes in this cookbook
+        database.collection("recipes")
+            .whereField("cookbookId", isEqualTo: cookbookId)
+            .getDocuments { [weak self] snapshot, error in
+                if let error = error {
+                    self?.showAlert(title: "Error", message: "Failed to delete recipes: \(error.localizedDescription)")
+                    return
+                }
+                
+                // Delete each recipe
+                let batch = self?.database.batch()
+                snapshot?.documents.forEach { document in
+                    batch?.deleteDocument(document.reference)
+                }
+                
+                // Commit batch delete
+                batch?.commit { error in
+                    if let error = error {
+                        self?.showAlert(title: "Error", message: "Failed to delete recipes: \(error.localizedDescription)")
+                        return
+                    }
+                    
+                    // Now delete the cookbook itself
+                    self?.database.collection("cookbooks").document(cookbookId).delete { error in
+                        if let error = error {
+                            self?.showAlert(title: "Error", message: "Failed to delete cookbook: \(error.localizedDescription)")
+                            return
+                        }
+                        
+                        // Reload cookbooks
+                        self?.loadCookbooks()
+                    }
+                }
+            }
     }
     
     func loadUserProfile() {
